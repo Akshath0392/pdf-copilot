@@ -22,6 +22,7 @@ A command-line Retrieval-Augmented Generation (RAG) pipeline that lets you inges
 ├── init.sh          # Dependency installation script
 ├── data/            # Place your PDF files here
 ├── vectorstore/     # FAISS index output (auto-generated)
+├── tests/           # Unit tests (pytest)
 ├── .env.example     # Sample environment configuration
 └── .env             # Your local configuration (not committed)
 ```
@@ -77,3 +78,28 @@ python cli.py ask "What are the key findings in the report?"
 ```
 
 The pipeline retrieves the most relevant chunks and uses the configured LLM to generate an answer, along with source references.
+
+## Testing
+
+Install pytest (one-time):
+
+```bash
+pip3 install pytest
+```
+
+Run all tests:
+
+```bash
+python -m pytest tests/ -v
+```
+
+All external dependencies (LLM APIs, HuggingFace models, FAISS, Pinecone) are mocked, so tests run fast without API keys or model downloads.
+
+| Test file | Module | What it covers |
+|---|---|---|
+| `test_config.py` | `config.py` | Default values, env var overrides, per-provider model defaults, directory paths |
+| `test_loader.py` | `loader.py` | PDF loading and chunking, empty-directory error handling |
+| `test_embeddings.py` | `embeddings.py` | Embedding instance creation and configuration |
+| `test_store.py` | `store.py` | FAISS/Pinecone create and load paths, retriever with default/custom k |
+| `test_chain.py` | `chain.py` | LLM provider selection (Claude/OpenAI/Gemini), unknown provider error, QA chain assembly |
+| `test_cli.py` | `cli.py` | Argparse routing, ingest/ask function wiring, output formatting |
