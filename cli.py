@@ -25,6 +25,12 @@ def ask(question: str):
         print(f"  - {src}  (page {page})")
 
 
+def chat():
+    from agent import chat_repl
+
+    chat_repl()
+
+
 def main():
     parser = argparse.ArgumentParser(description="RAG pipeline CLI")
     sub = parser.add_subparsers(dest="command")
@@ -34,12 +40,16 @@ def main():
     ask_parser = sub.add_parser("ask", help="Ask a question against ingested documents")
     ask_parser.add_argument("question", help="The question to ask")
 
+    sub.add_parser("chat", help="Start an interactive conversational RAG session")
+
     args = parser.parse_args()
 
     if args.command == "ingest":
         ingest()
     elif args.command == "ask":
         ask(args.question)
+    elif args.command == "chat":
+        chat()
     else:
         parser.print_help()
         sys.exit(1)

@@ -13,11 +13,12 @@ A command-line Retrieval-Augmented Generation (RAG) pipeline that lets you inges
 
 ```
 .
-├── cli.py           # CLI entrypoint (ingest / ask commands)
+├── cli.py           # CLI entrypoint (ingest / ask / chat commands)
 ├── chain.py         # LLM selection and RetrievalQA chain
 ├── config.py        # Environment variable loading and defaults
 ├── embeddings.py    # HuggingFace embedding wrapper
 ├── loader.py        # PDF loading and text chunking
+├── agent.py         # Conversational RAG agent with memory
 ├── store.py         # Vector store creation, loading, and retrieval
 ├── init.sh          # Dependency installation script
 ├── data/            # Place your PDF files here
@@ -79,6 +80,16 @@ python cli.py ask "What are the key findings in the report?"
 
 The pipeline retrieves the most relevant chunks and uses the configured LLM to generate an answer, along with source references.
 
+### Interactive chat
+
+Start a conversational session with memory across turns:
+
+```bash
+python cli.py chat
+```
+
+The agent uses the ingested documents as a tool and returns structured JSON responses with confidence levels, source references, and follow-up question suggestions. Type `exit` or `quit` to end the session.
+
 ## Testing
 
 Install pytest (one-time):
@@ -102,4 +113,5 @@ All external dependencies (LLM APIs, HuggingFace models, FAISS, Pinecone) are mo
 | `test_embeddings.py` | `embeddings.py` | Embedding instance creation and configuration |
 | `test_store.py` | `store.py` | FAISS/Pinecone create and load paths, retriever with default/custom k |
 | `test_chain.py` | `chain.py` | LLM provider selection (Claude/OpenAI/Gemini), unknown provider error, QA chain assembly |
-| `test_cli.py` | `cli.py` | Argparse routing, ingest/ask function wiring, output formatting |
+| `test_cli.py` | `cli.py` | Argparse routing, ingest/ask/chat function wiring, output formatting |
+| `test_agent.py` | `agent.py` | Pydantic schemas, response parser, RAG tool, agent builder, REPL loop |

@@ -18,6 +18,7 @@ cp .env.example .env  # Then edit .env with your API keys
 ```bash
 python cli.py ingest              # Load PDFs from data/, chunk, embed, and store in vectorstore/
 python cli.py ask "your question" # Query the ingested documents
+python cli.py chat                # Start interactive conversational RAG session
 ```
 
 ### Testing
@@ -33,11 +34,12 @@ Tests use mocks for all external dependencies (LLM APIs, HuggingFace models, FAI
 The pipeline flows: **PDF files → load & chunk → embed → vector store → retrieve → LLM answer**
 
 ```
-cli.py          → CLI entrypoint (argparse): dispatches `ingest` and `ask` commands
+cli.py          → CLI entrypoint (argparse): dispatches `ingest`, `ask`, and `chat` commands
 loader.py       → Loads PDFs from data/ via PyPDFLoader, splits with RecursiveCharacterTextSplitter
 embeddings.py   → HuggingFace embeddings factory (default: all-MiniLM-L6-v2, CPU, normalized)
 store.py        → Vector store adapter: FAISS (local, saves to vectorstore/) or Pinecone (cloud)
 chain.py        → LLM provider factory + RetrievalQA chain builder (stuff chain type, temperature=0)
+agent.py        → Conversational RAG agent: Pydantic response schema, RAG tool, agent builder, REPL
 config.py       → Centralized env config via python-dotenv with defaults
 tests/          → pytest unit tests (one file per module, all dependencies mocked)
 ```
